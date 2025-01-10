@@ -16,3 +16,4 @@
 *.xml
 .idea/parallel-assignment-1-olesia-mykhailyshyn.iml
 .idea/vcs.xml
+/matplotlib-cpp

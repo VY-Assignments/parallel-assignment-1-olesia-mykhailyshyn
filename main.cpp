@@ -4,36 +4,47 @@
 #include "Sequential.h"
 #include <chrono>
 #include <vector>
+#include <fstream>
 
 int main() {
+    std::fstream myFile;
+    myFile.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsSequential.txt)", std::ios::out);
+
     std::cout << "SEQUENTIAL VARIANT:" << std::endl;
     std::vector<int> matrixesSises = {5, 50, 100, 500, 1000, 10000};
 
-    for (int i = 0; i < matrixesSises.size(); i++) {
-        std::cout << "\nTesting matrix of size: " << matrixesSises[i] << std::endl;
-        for (int j = 0; j < 5; j++) {
-            Matrix matrix(matrixesSises[i]);
-            matrix.matrixCreation();
-            // matrix.printMatrix();
-            // matrix.printDiagonalElements();
+    if (myFile.is_open()) {
+        for (int i = 0; i < matrixesSises.size(); i++) {
+            std::cout << "\nTesting matrix of size: " << matrixesSises[i] << std::endl;
+            myFile << matrixesSises[i] << " ";
 
-            std::vector<int> maxElements;
+            double total_time = 0.0;
+            for (int j = 0; j < 5; j++) {
+                Matrix matrix(matrixesSises[i]);
+                matrix.matrixCreation();
 
-            std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-            start = std::chrono::high_resolution_clock::now();
+                std::vector<int> maxElements;
 
-            Sequential::findMaxPerColumn(matrix.getMatrix(), maxElements);
-            // Sequential::printMaxPerColumn(maxElements);
+                auto start = std::chrono::high_resolution_clock::now();
 
-            Sequential::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements);
-            // matrix.printMatrix();
+                Sequential::findMaxPerColumn(matrix.getMatrix(), maxElements);
+                Sequential::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements);
 
-            end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed_seconds = end - start;
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed_seconds = end - start;
 
-            std::cout << "Elapsed time: " << std::fixed << std::setprecision(6) << elapsed_seconds.count() << " seconds\n";
+                total_time += elapsed_seconds.count();
+
+                std::cout << "Elapsed time: " << std::fixed << std::setprecision(6) << elapsed_seconds.count() << " seconds\n";
+            }
+
+            double average_time = total_time / 5;
+            std::cout << "Average time: " << std::fixed << std::setprecision(6) << average_time << " seconds\n";
+            myFile << std::fixed << std::setprecision(6) << average_time << "\n";
         }
     }
+
+    myFile.close();
 
     return 0;
 }
