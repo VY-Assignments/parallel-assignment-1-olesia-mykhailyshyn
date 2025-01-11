@@ -49,27 +49,30 @@ int main() {
     myFileSequential.close();
 
     std::cout << "-----------------------------" << std::endl;
-    std::cout << "PARALLEL VARIANT:" << std::endl;
+    std::cout << "PARALLEL VARIANT (VARYING THREAD COUNTS):" << std::endl;
 
-    std::fstream myFileParallel;
-    myFileParallel.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallel.txt)", std::ios::out);
+    std::fstream myFileParallelThreads;
+    myFileParallelThreads.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallelThreads.txt)", std::ios::out);
 
-    if (myFileParallel.is_open()) {
-        for (int size : matrixSizes) {
-            std::cout << "\nTesting matrix of size: " << size << std::endl;
-            myFileParallel << size << " ";
+    std::vector<int> threadCounts = {6, 12, 24, 48, 96, 192, 384};
+    int matrixSize = 1000;
+
+    if (myFileParallelThreads.is_open()) {
+        for (int maxThreads : threadCounts) {
+            std::cout << "\nTesting with " << maxThreads << " threads for matrix size: " << matrixSize << std::endl;
+            myFileParallelThreads << matrixSize << " " << maxThreads << " ";
 
             double total_time = 0.0;
             for (int j = 0; j < 5; j++) {
-                Matrix matrix(size);
+                Matrix matrix(matrixSize);
                 matrix.matrixCreation();
 
                 std::vector<int> maxElements;
 
                 auto start = std::chrono::high_resolution_clock::now();
 
-                Parallel::findMaxPerColumn(matrix.getMatrix(), maxElements);
-                Parallel::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements);
+                Parallel::findMaxPerColumn(matrix.getMatrix(), maxElements, maxThreads);
+                Parallel::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements, maxThreads);
 
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed_seconds = end - start;
@@ -80,12 +83,12 @@ int main() {
             }
 
             double average_time = total_time / 5;
-            std::cout << "Average time: " << std::fixed << std::setprecision(6) << average_time << " seconds\n";
-            myFileParallel << std::fixed << std::setprecision(6) << average_time << "\n";
+            std::cout << "Average time with " << maxThreads << " threads: " << std::fixed << std::setprecision(6) << average_time << " seconds\n";
+            myFileParallelThreads << std::fixed << std::setprecision(6) << average_time << "\n"; // Log average time
         }
     }
 
-    myFileParallel.close();
+    myFileParallelThreads.close();
 
     return 0;
 }

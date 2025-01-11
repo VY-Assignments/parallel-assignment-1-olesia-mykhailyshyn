@@ -3,6 +3,7 @@
 #include <climits>
 #include <vector>
 #include <thread>
+#include <atomic>
 
 void Parallel::findMaxInColumn(const std::vector<std::vector<int>>& matrix, int column, std::vector<int>& maxElements) {
     int maxElement = INT_MIN;
@@ -14,18 +15,34 @@ void Parallel::findMaxInColumn(const std::vector<std::vector<int>>& matrix, int 
     maxElements[column] = maxElement;
 }
 
-void Parallel::findMaxPerColumn(const std::vector<std::vector<int>>& matrix, std::vector<int>& maxElements) {
+void Parallel::findMaxPerColumn(const std::vector<std::vector<int>>& matrix, std::vector<int>& maxElements, int maxThreads) {
     int matrixSize = matrix.size();
     maxElements.resize(matrixSize);
 
-    std::vector<std::thread> threads;
+    std::atomic<int> nextCol(0);
 
-    for (int i = 0; i < matrixSize; i++) {
-        threads.emplace_back(findMaxInColumn, std::cref(matrix), i, std::ref(maxElements));
+    auto worker = [&]() {
+        while (true) {
+            int col = nextCol++;
+            if (col >= matrixSize) break;
+
+            int maxElement = INT_MIN;
+            for (int i = 0; i < matrixSize; i++) {
+                if (matrix[i][col] > maxElement) {
+                    maxElement = matrix[i][col];
+                }
+            }
+            maxElements[col] = maxElement;
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < maxThreads; ++i) {
+        threads.emplace_back(worker);
     }
 
-    for (size_t i = 0; i < threads.size(); i++) {
-        threads[i].join();
+    for (auto& t : threads) {
+        t.join();
     }
 }
 
@@ -50,14 +67,24 @@ void Parallel::updateMatrixDiagonalElement(std::vector<std::vector<int>>& matrix
     }
 }
 
-void Parallel::updateMatrixDiagonalElements(std::vector<std::vector<int>>& matrix, const std::vector<int>& maxElements) {int matrixSize = matrix.size();
-    std::vector<std::thread> threads;
+void Parallel::updateMatrixDiagonalElements(std::vector<std::vector<int>>& matrix, const std::vector<int>& maxElements, int maxThreads) {
+    int matrixSize = matrix.size();
+    std::atomic<int> nextRow(0);
 
-    for (int i = 0; i < matrixSize; i++) {
-        threads.emplace_back(&Parallel::updateMatrixDiagonalElement, std::ref(matrix), i, std::cref(maxElements));
+    auto worker = [&]() {
+        while (true) {
+            int row = nextRow++;
+            if (row >= matrixSize) break;
+            matrix[row][row] = maxElements[row];
+        }
+    };
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < maxThreads; ++i) {
+        threads.emplace_back(worker);
     }
 
-    for (size_t i = 0; i < threads.size(); i++) {
-        threads[i].join();
+    for (auto& t : threads) {
+        t.join();
     }
 }
