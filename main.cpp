@@ -2,25 +2,27 @@
 #include <iomanip>
 #include "matrix.h"
 #include "Sequential.h"
+#include "Parallel.h"
 #include <chrono>
 #include <vector>
 #include <fstream>
 
 int main() {
-    std::fstream myFile;
-    myFile.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsSequential.txt)", std::ios::out);
-
     std::cout << "SEQUENTIAL VARIANT:" << std::endl;
-    std::vector<int> matrixesSises = {5, 50, 100, 500, 1000, 10000};
 
-    if (myFile.is_open()) {
-        for (int i = 0; i < matrixesSises.size(); i++) {
-            std::cout << "\nTesting matrix of size: " << matrixesSises[i] << std::endl;
-            myFile << matrixesSises[i] << " ";
+    std::fstream myFileSequential;
+    myFileSequential.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsSequential.txt)", std::ios::out);
+
+    std::vector<int> matrixSizes = {5, 50, 100, 500, 1000};
+
+    if (myFileSequential.is_open()) {
+        for (int size : matrixSizes) {
+            std::cout << "\nTesting matrix of size: " << size << std::endl;
+            myFileSequential << size << " ";
 
             double total_time = 0.0;
             for (int j = 0; j < 5; j++) {
-                Matrix matrix(matrixesSises[i]);
+                Matrix matrix(size);
                 matrix.matrixCreation();
 
                 std::vector<int> maxElements;
@@ -40,11 +42,50 @@ int main() {
 
             double average_time = total_time / 5;
             std::cout << "Average time: " << std::fixed << std::setprecision(6) << average_time << " seconds\n";
-            myFile << std::fixed << std::setprecision(6) << average_time << "\n";
+            myFileSequential << std::fixed << std::setprecision(6) << average_time << "\n";
         }
     }
 
-    myFile.close();
+    myFileSequential.close();
+
+    std::cout << "-----------------------------" << std::endl;
+    std::cout << "PARALLEL VARIANT:" << std::endl;
+
+    std::fstream myFileParallel;
+    myFileParallel.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallel.txt)", std::ios::out);
+
+    if (myFileParallel.is_open()) {
+        for (int size : matrixSizes) {
+            std::cout << "\nTesting matrix of size: " << size << std::endl;
+            myFileParallel << size << " ";
+
+            double total_time = 0.0;
+            for (int j = 0; j < 5; j++) {
+                Matrix matrix(size);
+                matrix.matrixCreation();
+
+                std::vector<int> maxElements;
+
+                auto start = std::chrono::high_resolution_clock::now();
+
+                Parallel::findMaxPerColumn(matrix.getMatrix(), maxElements);
+                Parallel::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements);
+
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed_seconds = end - start;
+
+                total_time += elapsed_seconds.count();
+
+                std::cout << "Elapsed time: " << std::fixed << std::setprecision(6) << elapsed_seconds.count() << " seconds\n";
+            }
+
+            double average_time = total_time / 5;
+            std::cout << "Average time: " << std::fixed << std::setprecision(6) << average_time << " seconds\n";
+            myFileParallel << std::fixed << std::setprecision(6) << average_time << "\n";
+        }
+    }
+
+    myFileParallel.close();
 
     return 0;
 }
