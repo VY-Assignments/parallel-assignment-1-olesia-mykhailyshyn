@@ -52,9 +52,9 @@ int main() {
     std::cout << "PARALLEL VARIANT (VARYING THREAD COUNTS):" << std::endl;
 
     std::fstream myFileParallelThreads;
-    myFileParallelThreads.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallelThreads.txt)", std::ios::out);
+    myFileParallelThreads.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallel.txt)", std::ios::out);
 
-    std::vector<int> threadCounts = {6, 12, 24, 48, 96, 192, 384};
+    std::vector<int> threadCounts = {1, 6, 12, 16, 24, 48, 96, 192, 384};
     int matrixSize = 1000;
 
     if (myFileParallelThreads.is_open()) {
