@@ -13,7 +13,7 @@ int main() {
     std::fstream myFileSequential;
     myFileSequential.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsSequential.txt)", std::ios::out);
 
-    std::vector<int> matrixSizes = {5, 50, 100, 500, 1000};
+    std::vector<int> matrixSizes = {5, 50, 100, 500, 1000, 10000};
 
     if (myFileSequential.is_open()) {
         for (int size : matrixSizes) {
@@ -54,8 +54,8 @@ int main() {
     std::fstream myFileParallelThreads;
     myFileParallelThreads.open(R"(C:\KSE\Parallel and Client-Server Programming\parallel-assignment-1-olesia-mykhailyshyn\resultsParallel.txt)", std::ios::out);
 
-    std::vector<int> threadCounts = {1, 6, 12, 16, 24, 48, 96, 192, 384};
-    int matrixSize = 1000;
+    std::vector<int> threadCounts = {1, 6, 12, 16, 32, 64, 128, 256};
+    int matrixSize = 10000;
 
     if (myFileParallelThreads.is_open()) {
         for (int maxThreads : threadCounts) {
