@@ -16,7 +16,7 @@ def plot_matrix_execution_time(filename):
     plt.title("Execution Time vs Matrix Size", fontsize=18)
     plt.xlabel("Matrix Size", fontsize=14)
     plt.ylabel("Execution Time (seconds)", fontsize=14)
-    plt.xticks(range(0, max(matrix_sizes) + 1, 100), fontsize=12)
+    plt.xticks(range(0, max(matrix_sizes) + 1, 500), fontsize=12)
     plt.yticks(fontsize=12)
     plt.grid(True)
     plt.legend(fontsize=12)

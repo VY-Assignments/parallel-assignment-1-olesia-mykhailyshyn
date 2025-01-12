@@ -41,8 +41,8 @@ void Parallel::findMaxPerColumn(const std::vector<std::vector<int>>& matrix, std
         threads.emplace_back(worker);
     }
 
-    for (auto& t : threads) {
-        t.join();
+    for (size_t i = 0; i < threads.size(); i++) {
+        threads[i].join();
     }
 }
 
@@ -84,7 +84,7 @@ void Parallel::updateMatrixDiagonalElements(std::vector<std::vector<int>>& matri
         threads.emplace_back(worker);
     }
 
-    for (auto& t : threads) {
-        t.join();
+    for (size_t i = 0; i < threads.size(); i++) {
+        threads[i].join();
     }
 }

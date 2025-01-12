@@ -11,7 +11,7 @@ def plot_from_file(filename):
             execution_times.append(execution_time)
 
     plt.figure(figsize=(12, 8))
-    plt.plot(thread_counts, execution_times, marker='o', linestyle='-', label="Matrix Size = 1000")
+    plt.plot(thread_counts, execution_times, marker='o', linestyle='-', label="Matrix Size = 10000")
 
     plt.xlim(0, max(thread_counts) + 10)
     plt.ylim(max(execution_times) + 0.01, 0)

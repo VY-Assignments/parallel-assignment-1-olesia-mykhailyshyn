@@ -25,12 +25,18 @@ int main() {
                 Matrix matrix(size);
                 matrix.matrixCreation();
 
+//                std::cout << "\nORIGINAL MATRIX" << std::endl;
+//                matrix.printMatrix();
+
                 std::vector<int> maxElements;
 
                 auto start = std::chrono::high_resolution_clock::now();
 
                 Sequential::findMaxPerColumn(matrix.getMatrix(), maxElements);
                 Sequential::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements);
+
+//                std::cout << "\nNEW MATRIX" << std::endl;
+//                matrix.printMatrix();
 
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed_seconds = end - start;
@@ -67,12 +73,18 @@ int main() {
                 Matrix matrix(matrixSize);
                 matrix.matrixCreation();
 
+//                std::cout << "\nORIGINAL MATRIX" << std::endl;
+//                matrix.printMatrix();
+
                 std::vector<int> maxElements;
 
                 auto start = std::chrono::high_resolution_clock::now();
 
                 Parallel::findMaxPerColumn(matrix.getMatrix(), maxElements, maxThreads);
                 Parallel::updateMatrixDiagonalElements(matrix.getMatrix(), maxElements, maxThreads);
+
+//                std::cout << "\nNEW MATRIX" << std::endl;
+//                matrix.printMatrix();
 
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed_seconds = end - start;
@@ -92,3 +104,12 @@ int main() {
 
     return 0;
 }
+
+//#include <thread>
+//#include <iostream>
+//
+//int main() {
+//    unsigned int threads = std::thread::hardware_concurrency();
+//    std::cout << "Available logical cores: " << threads << std::endl;
+//    return 0;
+//}
